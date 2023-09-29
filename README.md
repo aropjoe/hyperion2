@@ -1,3 +1,3 @@
 # Project Hyperion
 
-Hyperion a platform for small businesses to make sense of data.
+Hyperion is a platform for Nigerian businesses to make data driven decisions.
