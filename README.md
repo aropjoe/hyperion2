@@ -1,3 +1,3 @@
-# Hyperion
+# Project Hyperion
 
-Hyperion a basic data platform with data processing and visualization features using Django, Pandas, and Plotly.
+Hyperion a platform for small businesses to make sense of data.
