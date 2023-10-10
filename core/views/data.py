@@ -224,6 +224,7 @@ def po_analysis(request, data_id):
 
     if data_frame is not None:
         if not data_frame.empty:
+            print("A go ahead")
             po_creation_dates = data_frame["PO CREATION DATE"].to_list()
             po_numbers = data_frame["PO NUMBER"].to_list()
             qtys = data_frame["QTY"].to_list() 

@@ -3,6 +3,7 @@
 {% block title %}
 <title>{{data.name}} | Hyperion</title>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
 {% endblock title %}
 
 {% block header %}
@@ -33,8 +34,8 @@
 </div>
 
 <div class="flex mb-4 items-center">
-  <h2 class="text-base font-bold text-gray-900 sm:truncate sm:tracking-tight">Total Sales: ₦{{total_sales}}</h2>
-  <h2 class="ml-4 mr-4 text-base font-bold text-gray-900 sm:truncate sm:tracking-tight">Total Profit: ₦{{total_profit}}</h2>
+  <h2 class="text-base font-bold text-gray-900 sm:truncate sm:tracking-tight">Total Quantity: {{total_qty}}</h2>
+  <h2 class="ml-4 mr-4 text-base font-bold text-gray-900 sm:truncate sm:tracking-tight">Total Amount: {{total_amount}}</h2>
 </div>
 
 <div class="mb-4 border-b border-gray-200">
@@ -124,7 +125,7 @@
       series: {{gpl.amounts}},
       chart: {
         //height: 350,
-        type: 'donut',
+        type: 'donut'
       },
       labels: {{gpl.line_numbers | safe}},
       responsive: [{
@@ -147,7 +148,7 @@
       series: {{gpp.amounts}},
       chart: {
         //height: 350,
-        type: 'donut',
+        type: 'donut'
       },
       labels: {{gpp.part_numbers | safe}},
       responsive: [{
@@ -170,9 +171,9 @@
       series: {{gqs.qtys}},
       chart: {
         //height: 350,
-        type: 'donut',
+        type: 'donut'
       },
-      labels: {{gqs.suppliers}},
+      labels: {{gqs.suppliers | safe}},
       responsive: [{
         breakpoint: 480,
         options: {
@@ -190,10 +191,10 @@
     chart.render();
 
     var options = {
-      series: {{gas.amounts}},
+      series: {{gas.amounts }},
       chart: {
         //height: 350,
-        type: 'donut',
+        type: 'donut'
       },
       labels: {{gas.suppliers | safe}},
       responsive: [{
@@ -213,7 +214,7 @@
     chart.render();
 
     var options = {
-      series: {{gps.numbers}},
+      series: {{gps.numbers | safe}},
       chart: {
         //height: 350,
         type: 'donut',
@@ -237,7 +238,7 @@
 
     var options = {
       series: [{
-        data: {{gpd.numbers}}
+        data: {{gpd.numbers | safe}}
       }],
       chart: {
         type: 'bar',
