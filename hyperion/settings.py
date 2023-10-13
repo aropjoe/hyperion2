@@ -28,7 +28,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "abc5-197-210-77-233.ngrok-free.app", "8000-aropjoe-hyperion-ck5owuhof18.ws-eu98.gitpod.io"]
 
-CSRF_TRUSTED_ORIGINS = ['https://8000-aropjoe-hyperion-ck5owuhof18.ws-eu98.gitpod.io']
+CORS_ALLOW_ALL_ORIGINS = (
+    True
+)
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.gitpod.io",
+    "https://*.127.0.0.1",
+]
 
 # Application definition
 
