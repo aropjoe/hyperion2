@@ -437,9 +437,5 @@ def data_update(request, data_id):
 @login_required
 def data_delete(request, data_id):
     data = get_object_or_404(Data, pk=data_id)
-
-    if request.method == "POST":
-        data.delete()
-        return redirect("core:data_list")
-
-    return render(request, "core/data_delete.html", {"data": data})
+    data.delete()
+    return redirect("core:data_list")
