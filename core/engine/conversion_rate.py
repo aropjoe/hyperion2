@@ -18,6 +18,7 @@ def read_conversion_data(num_signups, conversion_rate):
 
     return signups, purchases, purchase_events
 
+
 """
 # Example usage
 num_signups = 1000

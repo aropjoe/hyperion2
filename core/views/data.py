@@ -3,6 +3,17 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from core.models import Data, Project, File
 from core.utils import (
+    process_date,
+    group_sales,
+    group_profit,
+    group_country,
+    group_product,
+    group_segment,
+    group_cities,
+    group_category,
+    group_sub_category,
+)
+from core.utils import (
     process_excel,
     group_profit_by_category,
     group_profit_by_sub_category,
@@ -50,6 +61,7 @@ from core.sentiment import analyze_sentiment
 import json
 import pandas as pd
 import datetime
+
 
 @login_required
 def data_list(request):
@@ -158,8 +170,9 @@ def performance_metrics(request, data_id):
     uptime_percentage = f"{uptime_percentage:.2f}%"
 
     stamps = [
-        #datetime.datetime.strptime(log_entry["timestamp"], "%Y-%m-%d %H:%M:%S")
-        log_entry for log_entry in server_logs
+        # datetime.datetime.strptime(log_entry["timestamp"], "%Y-%m-%d %H:%M:%S")
+        log_entry
+        for log_entry in server_logs
     ]
     latency_data = [x["latency"] for x in server_logs]
     response_times = [x["response_time"] for x in server_logs]
@@ -186,8 +199,8 @@ def subscription_analytics(request, data_id):
     total_revenue = sum(subscription["amount"] for subscription in subscriptions_data)
 
     cltv = calculate_cltv(subscriptions_data)
-    #total_revenue = total_revenue(subscriptions_data)
-    #average_revenue = average_revenue(subscriptions_data, total_revenue)
+    # total_revenue = total_revenue(subscriptions_data)
+    # average_revenue = average_revenue(subscriptions_data, total_revenue)
     average_revenue = total_revenue / len(subscriptions_data)
     _revenue_by_tier = revenue_by_tier(subscriptions_data)
 
@@ -214,8 +227,8 @@ def po_analysis(request, data_id):
     data = get_object_or_404(Data, pk=data_id)
     file_path = data.files.first().file.path
     data_frame = pd.read_csv(file_path)
-    #data_frame = data_frame.dropna()
-    #data_frame = process_excel(file_path)
+    # data_frame = data_frame.dropna()
+    # data_frame = process_excel(file_path)
 
     context = {
         "data": data,
@@ -227,17 +240,17 @@ def po_analysis(request, data_id):
             print("A go ahead")
             po_creation_dates = data_frame["PO CREATION DATE"].to_list()
             po_numbers = data_frame["PO NUMBER"].to_list()
-            qtys = data_frame["QTY"].to_list() 
+            qtys = data_frame["QTY"].to_list()
             total_line_amounts = data_frame["TOTAL LINE AMOUNT"].to_list()
-            currencies = data_frame["Currency"].to_list() 
-            unit_costs = data_frame["UNIT COST "].to_list() 
-            suppliers_accounts = data_frame["SUPPLIER ACCOUNT"].to_list() 
-            line_numbers = data_frame["LineNumber"].to_list() 
-            part_numbers = data_frame["Part Number"].to_list() 
+            currencies = data_frame["Currency"].to_list()
+            unit_costs = data_frame["UNIT COST "].to_list()
+            suppliers_accounts = data_frame["SUPPLIER ACCOUNT"].to_list()
+            line_numbers = data_frame["LineNumber"].to_list()
+            part_numbers = data_frame["Part Number"].to_list()
 
             total_amount = sum_column(data_frame, "TOTAL LINE AMOUNT")
             total_amount = round_up_to_2_decimal(total_amount)
-            total_amount = add_commas_to_integer(total_amount) # total sales
+            total_amount = add_commas_to_integer(total_amount)  # total sales
 
             total_qty = sum_column(data_frame, "QTY")
             print(total_qty, total_amount)
@@ -439,3 +452,114 @@ def data_delete(request, data_id):
     data = get_object_or_404(Data, pk=data_id)
     data.delete()
     return redirect("core:data_list")
+
+
+@login_required
+def schemaless_view(request, data_id):
+    data = get_object_or_404(Data, pk=data_id)
+    file_path = data.files.first().file.path
+    data_frame = pd.read_csv(file_path)
+    print(data_frame)
+
+    context = {
+        "data": data,
+    }
+
+    if data_frame is not None:
+        if not data_frame.empty:
+            if "Sales" in data_frame.columns:
+                group_sales_ = group_sales(data_frame)
+                total_sales = sum_column(data_frame, "Sales")
+                total_sales = round_up_to_2_decimal(total_sales)
+                total_sales = add_commas_to_integer(total_sales)
+            else:
+                group_sales_ = None
+                total_sales = 0
+
+            if "Profit" in data_frame.columns:
+                group_profit_ = group_profit(data_frame)
+                total_profit = sum_column(data_frame, "Profit")
+                total_profit = round_up_to_2_decimal(total_profit)
+                total_profit = add_commas_to_integer(total_profit)
+            else:
+                group_profit_ = None
+                total_profit = 0
+
+            if "ProductName" in data_frame.columns:
+                group_product_ = group_product(data_frame)
+            else:
+                group_product_ = None
+
+            if "Segment" in data_frame.columns:
+                group_segment_ = group_segment(data_frame)
+            else:
+                group_segment_ = None
+
+            if "City" in data_frame.columns:
+                group_cities_ = group_cities(data_frame)
+            else:
+                group_cities_ = None
+
+            if "Category" in data_frame.columns:
+                group_category_ = group_category(data_frame)
+            else:
+                group_category_ = None
+
+            if "Sub_Category" in data_frame.columns:
+                group_sub_category_ = group_sub_category(data_frame)
+            else:
+                group_sub_category_ = None
+
+            if "Country" in data_frame.columns:
+                group_country_ = group_country(data_frame)
+            else:
+                group_country_ = None
+
+            if "OrderDate" in data_frame.columns:
+                data_frame["OrderDate"] = data_frame["OrderDate"].apply(process_date)
+                all_dates = data_frame["OrderDate"].to_list()
+            else:
+                return None
+
+            if "order_dates" in request.GET.keys():
+                selected_dates = request.GET.getlist("order_dates")
+
+                group_sales_["sales"] = [
+                    sale
+                    for sale, date in zip(group_sales_["sales"], group_sales_["dates"])
+                    if date in selected_dates
+                ]
+                group_sales_["dates"] = [
+                    date for date in group_sales_["dates"] if date in selected_dates
+                ]
+
+                group_profit_["profit"] = [
+                    profit
+                    for profit, date in zip(
+                        group_profit_["profit"], group_profit_["dates"]
+                    )
+                    if date in selected_dates
+                ]
+                group_profit_["dates"] = [
+                    date for date in group_profit_["dates"] if date in selected_dates
+                ]
+
+            context.update(
+                {
+                    "group_profit": group_profit_,
+                    "group_sales": group_sales_,
+                    "total_profit": total_profit,
+                    "total_sales": total_sales,
+                    "group_category": group_category_,
+                    "group_sub_category": group_sub_category_,
+                    "group_cities": group_cities_,
+                    "group_country": group_country_,
+                    "group_segment": group_segment_,
+                    "group_product": group_product_,
+                    "all_dates": all_dates,
+                }
+            )
+        else:
+            context["empty_file"] = True
+
+    return render(request, "core/schemaless.html", context)

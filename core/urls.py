@@ -23,6 +23,7 @@ from .views import (
     performance_metrics,
     subscription_analytics,
     po_analysis,
+    schemaless_view,
 )
 
 app_name = "core"
@@ -34,19 +35,8 @@ urlpatterns = [
     path("data/create/", data_create, name="data_create"),
     path("data/<int:data_id>/", data_detail, name="data_detail"),
     path("data/<int:data_id>/analysis/", data_analysis, name="data_analysis"),
+    path("data/<int:data_id>/schemaless/", schemaless_view, name="schemaless"),
     path("data/<int:data_id>/po-analysis/", po_analysis, name="po_analysis"),
-    path("data/<int:data_id>/text-analysis/", text_analysis, name="text_analysis"),
-    path("data/<int:data_id>/subscription-analytics/", subscription_analytics, name="subscription_analytics"),
-    path(
-        "data/<int:data_id>/performance-metrics/",
-        performance_metrics,
-        name="performance_metrics",
-    ),
-    path(
-        "data/<int:data_id>/conversion-analytics/",
-        conversion_analytics,
-        name="conversion_analytics",
-    ),
     path("data/<int:data_id>/update/", data_update, name="data_update"),
     path("data/<int:data_id>/upload/", data_upload, name="data_upload"),
     path("data/<int:data_id>/delete/", data_delete, name="data_delete"),

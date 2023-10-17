@@ -26,11 +26,14 @@ SECRET_KEY = "django-insecure-gazt3__*czxto&b9o8t8px+8kk%r1^j7$%(xa@^k2p(*dftm4n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "abc5-197-210-77-233.ngrok-free.app", "8000-aropjoe-hyperion-ck5owuhof18.ws-eu98.gitpod.io"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "abc5-197-210-77-233.ngrok-free.app",
+    "8000-aropjoe-hyperion-ck5owuhof18.ws-eu98.gitpod.io",
+]
 
-CORS_ALLOW_ALL_ORIGINS = (
-    True
-)
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://*.gitpod.io",
